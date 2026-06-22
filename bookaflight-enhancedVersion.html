@@ -1,0 +1,830 @@
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --sky:#dff5ff;
+  --blue:#0b4fb3;
+  --deep:#073879;
+  --yellow:#ffd766;
+  --green:#16a36a;
+  --pink:#ff7eb6;
+  --orange:#ff9f43;
+  --card:#ffffff;
+  --ink:#19324d;
+  --soft:#f3f8ff;
+  --border:#c8d8ec;
+}
+body{
+  font-family:Arial, "Helvetica Neue", sans-serif;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(255,255,255,.95) 0 8%, transparent 9%),
+    radial-gradient(circle at 90% 18%, rgba(255,255,255,.9) 0 7%, transparent 8%),
+    linear-gradient(180deg,#bdeaff 0%,#eff9ff 45%,#fff8e8 100%);
+  color:var(--ink);
+  min-height:100vh;
+}
+.app{max-width:860px;margin:0 auto;padding:1rem 1rem 2rem}
+.header{
+  background:linear-gradient(135deg,#0756c7,#35a7ff);
+  border-radius:26px;
+  padding:1.2rem;
+  margin-bottom:1rem;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  gap:1rem;
+  box-shadow:0 12px 30px rgba(0,66,150,.22);
+  position:relative;
+  overflow:hidden;
+}
+.header:after{
+  content:"☁️ ☁️ ✈️";
+  position:absolute;right:18px;top:12px;font-size:1.8rem;opacity:.25;
+  animation:cloudFloat 6s ease-in-out infinite;
+}
+.header-icon{font-size:3rem;filter:drop-shadow(0 4px 8px rgba(0,0,0,.18))}
+.header h1{font-size:1.75rem;font-weight:800;margin-bottom:.25rem}
+.header p{font-size:.95rem;opacity:.95}
+.teacher-tools{display:flex;gap:.5rem;flex-wrap:wrap;margin:-.2rem 0 1rem}
+.tiny-btn{
+  border:none;border-radius:999px;padding:.45rem .8rem;background:#fff;color:var(--blue);
+  font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(10,60,120,.12);
+}
+.steps{display:flex;gap:6px;margin-bottom:1rem;flex-wrap:wrap}
+.step-dot{
+  min-width:34px;height:34px;border-radius:999px;border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#63809d;
+  transition:all .25s;background:#fff;padding:0 .5rem;
+}
+.step-dot.active{background:var(--blue);border-color:var(--blue);color:#fff;transform:translateY(-2px)}
+.step-dot.done{background:var(--green);border-color:var(--green);color:#fff}
+.progress-bar{height:8px;background:#d7e9fb;border-radius:999px;margin-bottom:1rem;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#13b86b,#35a7ff,#ffd766);transition:width .5s;border-radius:999px}
+.card{
+  background:rgba(255,255,255,.94);
+  border:1px solid rgba(180,210,235,.9);
+  border-radius:26px;
+  padding:1.3rem;
+  margin-bottom:1rem;
+  box-shadow:0 12px 30px rgba(20,70,130,.12);
+}
+.card h2{font-size:1.22rem;font-weight:800;color:var(--deep);margin-bottom:1rem;display:flex;align-items:center;gap:.55rem}
+.instruction{
+  background:#fff7d6;border:1px solid #ffdf75;border-radius:18px;padding:.75rem;margin-bottom:1rem;
+  font-size:.92rem;line-height:1.35;
+}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:.85rem}
+.option-btn{
+  border:2px solid var(--border);border-radius:20px;padding:.8rem;cursor:pointer;background:#fff;text-align:center;
+  transition:transform .18s, box-shadow .18s, border-color .18s;color:var(--ink);
+  position:relative;overflow:hidden;
+}
+.option-btn:hover{border-color:#35a7ff;background:#f0f9ff;transform:translateY(-3px);box-shadow:0 10px 18px rgba(32,120,200,.16)}
+.option-btn.selected{border-color:#0b4fb3;background:#eaf5ff;border-width:3px;box-shadow:0 10px 20px rgba(11,79,179,.18)}
+.option-btn.selected:after{content:"✓";position:absolute;right:10px;top:10px;background:var(--green);color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-weight:900}
+.option-btn img{width:100%;height:118px;object-fit:cover;border-radius:16px;margin-bottom:.55rem}
+.option-btn .label{font-size:.9rem;font-weight:800}
+.option-btn .sub{font-size:.75rem;color:#59718a;margin-top:4px}
+.airline-logo{width:64px;height:64px;border-radius:18px;margin:0 auto .55rem;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:900;letter-spacing:.5px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.75)}
+.btn-primary{
+  background:linear-gradient(135deg,#0756c7,#1f91ff);color:#fff;border:none;border-radius:18px;padding:.9rem 1.5rem;
+  font-size:1rem;font-weight:900;cursor:pointer;width:100%;margin-top:1rem;transition:transform .18s, box-shadow .18s;
+  box-shadow:0 8px 18px rgba(7,86,199,.22)
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(7,86,199,.27)}
+.btn-primary:disabled{background:#9ca9b8;cursor:not-allowed;box-shadow:none;transform:none}
+.btn-secondary{background:#fff;color:var(--blue);border:2px solid #9dc8ff;border-radius:16px;padding:.75rem 1.1rem;font-weight:900;cursor:pointer}
+.input-big{
+  width:100%;padding:.9rem 1rem;border:2px solid #a9cef5;border-radius:16px;font-size:1.05rem;background:#fff;color:var(--ink);font-weight:700;
+}
+.passport-book{
+  max-width:520px;margin:0 auto;background:linear-gradient(135deg,#123b88,#08245d);border-radius:24px;padding:1.1rem;color:#f7d778;
+  box-shadow:0 16px 32px rgba(8,36,93,.32);border:5px solid #0d2e70;
+}
+.passport-cover{text-align:center;padding:1.5rem;border:2px solid rgba(247,215,120,.65);border-radius:18px}
+.passport-emblem{font-size:4rem;margin:.8rem 0;filter:drop-shadow(0 4px 5px rgba(0,0,0,.25))}
+.passport-page{background:#fff8e8;color:#17304c;border-radius:18px;padding:1rem;margin-top:1rem;box-shadow:inset 0 0 0 2px #e8d39c}
+.passport-number{
+  font-family:"Courier New", monospace;font-size:1.55rem;letter-spacing:2px;background:#fff;border:2px dashed #1f65bd;color:#0a3c84;
+  border-radius:14px;padding:.75rem;text-align:center;font-weight:900;margin:.6rem 0;
+}
+.copy-box{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap}
+.check-card{background:#f7fbff;border:2px dashed #9dc8ff;border-radius:20px;padding:1rem;margin-top:1rem}
+.status-pill{display:inline-block;border-radius:999px;padding:.3rem .65rem;font-weight:900;font-size:.76rem;background:#e8f6ef;color:#087242}
+.time-card{
+  border:2px solid var(--border);border-radius:18px;padding:.8rem 1rem;cursor:pointer;background:#fff;transition:all .2s;min-width:140px
+}
+.time-card:hover,.time-card.selected{border-color:#0b4fb3;background:#eaf5ff;transform:translateY(-2px)}
+.time-card .time{font-size:1.3rem;font-weight:900;color:#073879}
+.time-card .detail{font-size:.75rem;color:#59718a;margin-top:2px}
+.info-row{display:flex;justify-content:space-between;font-size:.88rem;color:#59718a;padding:.45rem 0;border-bottom:1px dashed #d5e5f6}
+.info-row:last-child{border-bottom:none}
+.info-row strong{color:var(--ink)}
+.bag-card .bag-emoji{font-size:3rem;animation:bounce 1.6s ease-in-out infinite}
+.bag-belt{height:64px;background:repeating-linear-gradient(90deg,#d5e5f6 0 24px,#c1d6eb 24px 48px);border-radius:18px;margin:1rem 0;overflow:hidden;position:relative}
+.bag-on-belt{position:absolute;left:-70px;top:8px;font-size:2.5rem;animation:beltMove 4.8s linear infinite}
+.security-zone{display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:stretch}
+.security-box{border:2px solid #a9cef5;border-radius:20px;padding:1rem;background:#fff;text-align:center;min-height:160px}
+.drag-item{display:inline-block;margin:.35rem;padding:.5rem .7rem;background:#fff3c4;border:2px solid #ffc44d;border-radius:999px;font-weight:900;cursor:pointer}
+.drag-item.cleared{background:#e8f6ef;border-color:#1cb66f;color:#087242}
+.plane-diagram{background:#eff7ff;border-radius:18px;padding:1rem;overflow-x:auto}
+.plane-body{background:#d6e9fb;border-radius:16px;padding:.75rem}
+.seat-section-label{font-size:.75rem;font-weight:900;color:#073879;text-align:center;padding:.4rem;background:#bad8f5;border-radius:10px;margin-bottom:.55rem}
+.seat-row{display:flex;gap:4px;justify-content:center;margin-bottom:4px;align-items:center}
+.seat{width:28px;height:28px;border-radius:7px;border:2px solid #7aa7d0;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.55rem;color:#073879;font-weight:900;transition:all .15s;flex-shrink:0}
+.seat:hover{background:#bad8f5}.seat.selected{background:#0b4fb3;color:#fff;border-color:#0b4fb3}.seat.taken{background:#e0e0e0;cursor:not-allowed;color:#aaa;border-color:#ccc}.seat.business{background:#ffeaa0;border-color:#c9a800}.seat.business.selected{background:#c9a800;color:#fff;border-color:#a07800}
+.aisle{width:18px;flex-shrink:0}.row-num{width:18px;font-size:.6rem;color:#59718a;text-align:right;flex-shrink:0}
+.food-card{border:2px solid var(--border);border-radius:20px;overflow:hidden;cursor:pointer;transition:all .2s;background:#fff}.food-card:hover,.food-card.selected{border-color:#0b4fb3;transform:translateY(-2px)}.food-card img{width:100%;height:100px;object-fit:cover}.food-card .food-info{padding:.65rem}.food-card .food-name{font-size:.86rem;font-weight:900}.food-card .food-sub{font-size:.72rem;color:#59718a}
+.selfie-area{border:2px dashed #a9cef5;border-radius:20px;padding:1.1rem;text-align:center;background:#f8fcff}
+#selfie-video{width:100%;max-width:320px;border-radius:16px;background:#000}.selfie-preview{width:100%;max-width:320px;border-radius:16px;margin:0 auto;display:block}
+.ticket{background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 14px 32px rgba(0,0,80,.16);max-width:560px;margin:0 auto}.ticket-header{background:linear-gradient(135deg,#073879,#1f91ff);padding:1.25rem;color:#fff;display:flex;justify-content:space-between;align-items:center}.ticket-body{padding:1.25rem;border-bottom:1px dashed #ccc}.route-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}.route-city{text-align:center}.route-city .code{font-size:2rem;font-weight:900;color:#073879}.route-city .name{font-size:.75rem;color:#59718a}.route-line{flex:1;border-top:2px dashed #bad8f5;margin:0 .75rem;position:relative}.plane-icon{position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-size:1.25rem}.ticket-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;font-size:.78rem}.ticket-field .label{color:#8aa0b5;font-size:.65rem;margin-bottom:2px;text-transform:uppercase;letter-spacing:.5px}.ticket-field .value{font-weight:900;color:#073879}.ticket-photo-row{padding:1rem 1.25rem;display:flex;gap:1rem;align-items:center;background:#f8fbff}.ticket-photo{width:70px;height:70px;border-radius:14px;object-fit:cover;border:3px solid #0b4fb3}.barcode{padding:.75rem 1.25rem;text-align:center}.barcode-lines{display:flex;gap:1.5px;justify-content:center;height:36px}.barcode-line{background:#073879}
+.certificate{
+  max-width:660px;margin:1rem auto;background:#fffdf3;border:10px solid #ffd766;border-radius:26px;padding:1.5rem;text-align:center;
+  box-shadow:0 16px 38px rgba(110,82,0,.18);position:relative;overflow:hidden
+}
+.certificate:before{content:"🏆";font-size:5rem;display:block}
+.cert-name{font-size:1.8rem;font-weight:900;color:#073879;margin:.5rem 0;text-decoration:underline}
+.cert-title{font-size:1.5rem;font-weight:900;color:#b57900}
+.overlay{
+  position:fixed;inset:0;background:linear-gradient(180deg,#c8f0ff,#ffffff);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;
+}
+.overlay-inner{width:min(900px,100%);text-align:center}
+.overlay img{width:100%;max-height:72vh;object-fit:contain;border-radius:24px;box-shadow:0 18px 40px rgba(0,0,0,.2);background:#fff}
+.overlay h2{font-size:1.5rem;margin:.8rem 0;color:#073879}
+.fly-plane{position:fixed;inset:0;z-index:9998;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#c8f0ff,#ffffff);pointer-events:none}
+.fly-plane img{width:100vw;height:100vh;object-fit:cover;object-position:center;}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:9997;overflow:hidden}.confetti span{position:absolute;top:-20px;font-size:1.5rem;animation:fall 3s linear forwards}
+.welcome{font-size:2rem;font-weight:900;color:#073879;animation:pop .7s ease-out both}
+@keyframes cloudFloat{50%{transform:translateX(-18px)}}
+@keyframes bounce{50%{transform:translateY(-8px)}}
+@keyframes beltMove{to{left:105%}}
+@keyframes flyAcross{0%{left:-120px;transform:translateY(0) rotate(6deg)}50%{transform:translateY(-30px) rotate(2deg)}100%{left:110%;transform:translateY(0) rotate(6deg)}}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg);opacity:.2}}
+@keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
+@media(max-width:700px){.grid-4,.grid-3{grid-template-columns:1fr 1fr}.security-zone{grid-template-columns:1fr}.ticket-grid{grid-template-columns:1fr 1fr}.header h1{font-size:1.4rem}}
+</style>
+
+<div class="app">
+  <div class="header">
+    <div class="header-icon">✈️</div>
+    <div>
+      <h1>Book a Flight!</h1>
+      <p>A passport-to-boarding-pass travel adventure 🌍</p>
+    </div>
+  </div>
+  <div class="teacher-tools">
+    <button class="tiny-btn" onclick="speakStep()">🎙 Hear Instructions</button>
+    <button class="tiny-btn" onclick="toggleSound()">🔊 Sound: <span id="sound-label">On</span></button>
+  </div>
+  <div class="steps" id="steps-bar"></div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:8%"></div></div>
+  <div id="step-content"></div>
+</div>
+
+<script>
+const STEPS = ['Passport','Airline','Airport','Destination','Check-in','Baggage','Security','Schedule','Seat','Meal','Selfie','Ticket','Arrival','Certificate'];
+
+const COUNTRIES = {
+  USA:{name:'United States',flag:'🇺🇸',img:'https://github.com/nelsonsia27/G5-BookAFlight/blob/main/40.jpg?raw=true',airports:['LAX – Los Angeles','JFK – New York','SFO – San Francisco'],tz_diff:17,flight_h:{TPE:13,KHH:14},code:'LAX',welcome:'Welcome to the United States!'},
+  NZ:{name:'New Zealand',flag:'🇳🇿',img:'https://github.com/nelsonsia27/G5-BookAFlight/blob/main/20.jpg?raw=true',airports:['AKL – Auckland','CHC – Christchurch'],tz_diff:4,flight_h:{TPE:11,KHH:11},code:'AKL',welcome:'Welcome to New Zealand!'},
+  TH:{name:'Thailand',flag:'🇹🇭',img:'https://github.com/nelsonsia27/G5-BookAFlight/blob/main/24.jpg?raw=true',airports:['BKK – Bangkok Suvarnabhumi','HKT – Phuket'],tz_diff:-1,flight_h:{TPE:3,KHH:3},code:'BKK',welcome:'Welcome to Thailand!'},
+  PH:{name:'Philippines',flag:'🇵🇭',img:'https://github.com/nelsonsia27/G5-BookAFlight/blob/main/27.jpg?raw=true',airports:['MNL – Manila Ninoy Aquino','CEB – Mactan Cebu'],tz_diff:0,flight_h:{TPE:2,KHH:2},code:'MNL',welcome:'Welcome to the Philippines!'},
+  SG:{name:'Singapore',flag:'🇸🇬',img:'https://github.com/nelsonsia27/G5-BookAFlight/blob/main/30.jpg?raw=true',airports:['SIN – Changi Airport'],tz_diff:0,flight_h:{TPE:4,KHH:4},code:'SIN',welcome:'Welcome to Singapore!'},
+  JP:{name:'Japan',flag:'🇯🇵',img:'https://github.com/nelsonsia27/G5-BookAFlight/blob/main/38.jpg?raw=true',airports:['NRT – Tokyo Narita','KIX – Osaka Kansai','CTS – Sapporo'],tz_diff:1,flight_h:{TPE:3,KHH:3},code:'NRT',welcome:'Welcome to Japan!'},
+  BR:{name:'Brazil',flag:'🇧🇷',img:'https://github.com/nelsonsia27/G5-BookAFlight/blob/main/36.jpg?raw=true',airports:['GRU – São Paulo Guarulhos','GIG – Rio de Janeiro'],tz_diff:-12,flight_h:{TPE:23,KHH:24},code:'GRU',welcome:'Welcome to Brazil!'},
+  CN:{name:'China',flag:'🇨🇳',img:'https://github.com/nelsonsia27/G5-BookAFlight/blob/main/34.jpg?raw=true',airports:['PEK – Beijing Capital','PVG – Shanghai Pudong','CAN – Guangzhou'],tz_diff:0,flight_h:{TPE:3,KHH:3},code:'PEK',welcome:'Welcome to China!'}
+};
+
+const AIRLINES = [
+  {id:'CI',name:'China Airlines',color:'#c00',bg:'#fff0f0',text:'CI',gif:'https://github.com/nelsonsia27/G5-BookAFlight/blob/main/G5-L6-2s.gif?raw=true'},
+  {id:'BR',name:'EVA Air',color:'#006b3f',bg:'#e6f5ee',text:'BR',gif:'https://github.com/nelsonsia27/G5-BookAFlight/blob/main/G5-L6-2s%20(1).gif?raw=true'},
+  {id:'JL',name:'Japan Airlines',color:'#e60012',bg:'#fff0f0',text:'JL',gif:'https://github.com/nelsonsia27/G5-BookAFlight/blob/main/G5-L6-2s%20(2).gif?raw=true'},
+  {id:'SQ',name:'Singapore Airlines',color:'#00358e',bg:'#e6f0ff',text:'SQ',gif:'https://github.com/nelsonsia27/G5-BookAFlight/blob/main/G5-L6-2s%20(3).gif?raw=true'},
+  {id:'CX',name:'Cathay Pacific',color:'#006d5b',bg:'#e6f5f2',text:'CX',gif:'https://github.com/nelsonsia27/G5-BookAFlight/blob/main/G5-L6-2s%20(4).gif?raw=true'},
+  {id:'TG',name:'Thai Airways',color:'#640b6b',bg:'#f5e6f7',text:'TG',gif:'https://github.com/nelsonsia27/G5-BookAFlight/blob/main/G5-L6-2s%20(5).gif?raw=true'}
+];
+
+const AIRPORTS = [
+  {code:'TPE',city:'Taoyuan',name:'Taiwan Taoyuan International Airport',emoji:'🛬',gif:'https://github.com/nelsonsia27/G5-BookAFlight/blob/main/G5-L6-2s%20(7).gif?raw=true'},
+  {code:'KHH',city:'Kaohsiung',name:'Kaohsiung International Airport',emoji:'🏙️',gif:'https://github.com/nelsonsia27/G5-BookAFlight/blob/main/G5-L6-2s%20(8).gif?raw=true'}
+];
+
+const MEALS = [
+  {id:'m1',name:'Chicken Rice',sub:'Classic Asian set meal',img:'https://github.com/nelsonsia27/G5-BookAFlight/blob/main/in-flight-meal-in-chicken.jpg?raw=true'},
+  {id:'m2',name:'Western Beef',sub:'Steak with vegetables',img:'https://github.com/nelsonsia27/G5-BookAFlight/blob/main/The-Best-Foods-to-Order-on-a-Flight-According-to-Chefs-FT-BLOG1222-4c93bdb4cdaa4c469a75753f3b5ae00c.jpg?raw=true'},
+  {id:'m3',name:'Noodle Soup',sub:'Warm comfort bowl',img:'https://github.com/nelsonsia27/G5-BookAFlight/blob/main/5f3a16eaa3108348fce56832.jpeg?raw=true'},
+  {id:'m4',name:'Vegetarian Plate',sub:'Fresh garden selection',img:'https://github.com/nelsonsia27/G5-BookAFlight/blob/main/3093737e95b4a0c45be12b0b261e4e09.jpg?raw=true'},
+  {id:'m5',name:'Special Set',sub:"Chef\'s recommendation",img:'https://github.com/nelsonsia27/G5-BookAFlight/blob/main/maxresdefault%20(1).jpg?raw=true'},
+  {id:'m6',name:'Business Dinner',sub:'Premium 3-course meal',img:'https://github.com/nelsonsia27/G5-BookAFlight/blob/main/17.-Aer-Lingus-Economy-Class-Dinner-Dublin-to-Chicago-October-2022.jpg?raw=true'}
+];
+
+
+const SECURITY_ITEMS = [
+  {id:'passport',name:'Passport',emoji:'🛂',bad:false},
+  {id:'ticket',name:'Boarding Pass',emoji:'🎫',bad:false},
+  {id:'book',name:'Book',emoji:'📘',bad:false},
+  {id:'snack',name:'Snack',emoji:'🍪',bad:false},
+  {id:'jacket',name:'Jacket',emoji:'🧥',bad:false},
+  {id:'headphones',name:'Headphones',emoji:'🎧',bad:false},
+  {id:'smallLiquid',name:'Small Liquid',emoji:'🧴',bad:false},
+  {id:'knife',name:'Knife',emoji:'🔪',bad:true},
+  {id:'bigLiquid',name:'More than 100ml Liquid',emoji:'🧴',bad:true},
+  {id:'battery',name:'Loose Battery',emoji:'🔋',bad:true},
+  {id:'fireworks',name:'Fireworks',emoji:'🎆',bad:true},
+  {id:'lighter',name:'Lighter',emoji:'🔥',bad:true},
+  {id:'scissors',name:'Sharp Scissors',emoji:'✂️',bad:true}
+];
+function shuffleArray(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function startSecurityGame(){
+  const bad = shuffleArray(SECURITY_ITEMS.filter(x=>x.bad)).slice(0, Math.random()<.5?2:3);
+  const safe = shuffleArray(SECURITY_ITEMS.filter(x=>!x.bad)).slice(0, 6);
+  state.securityGameItems = shuffleArray([...bad,...safe]);
+  state.securitySelected = [];
+  state.securityAttempts = 0;
+  state.securityDone = false;
+}
+function toggleSecurityItem(id){
+  if(!state.securitySelected) state.securitySelected=[];
+  if(state.securitySelected.includes(id)){
+    state.securitySelected = state.securitySelected.filter(x=>x!==id);
+  }else{
+    state.securitySelected.push(id);
+  }
+  playTone(640,.07);
+  render();
+}
+function checkSecurityAnswers(){
+  const badIds = state.securityGameItems.filter(x=>x.bad).map(x=>x.id).sort().join(',');
+  const selectedIds = [...state.securitySelected].sort().join(',');
+  state.securityAttempts = (state.securityAttempts||0)+1;
+  if(badIds===selectedIds){
+    state.securityDone = true;
+    playTone(880,.12);
+  }else{
+    state.securityDone = false;
+    playTone(260,.18);
+  }
+  render();
+}
+
+const BAGS = [
+  {id:'backpack',name:'Backpack',emoji:'🎒',sub:'Light and easy'},
+  {id:'carryon',name:'Carry-on Suitcase',emoji:'🧳',sub:'Perfect for short trips'},
+  {id:'checked',name:'Checked Luggage',emoji:'🛄',sub:'For big adventures'},
+  {id:'sports',name:'Sports Bag',emoji:'🎽',sub:'For active travelers'}
+];
+
+let state = {step:0,name:'',passport:'',passportCopy:'',airline:null,airportCode:null,airportCity:null,country:null,destAirport:null,checkPassport:'',checkedIn:false,bag:null,securityDone:false,securityItems:{passport:false,bag:false,water:false},securityGameItems:null,securitySelected:[],securityAttempts:0,depTime:null,arrTime:null,seat:null,seatClass:null,meal:null,selfieData:null};
+let takenSeats = [];
+let stream = null;
+let soundOn = true;
+
+function initTaken(){takenSeats=[];for(let r=1;r<=28;r++) for(let c of ['A','B','C','D','E','F']) if(Math.random()<.32) takenSeats.push(r+c);}
+initTaken();
+
+function randPassport(){
+  const letters='ABCDEFGHJKLMNPQRSTUVWXYZ';
+  const nums='23456789';
+  let s='';
+  for(let i=0;i<2;i++) s+=letters[Math.floor(Math.random()*letters.length)];
+  s+='-';
+  for(let i=0;i<4;i++) s+=nums[Math.floor(Math.random()*nums.length)];
+  s+='-';
+  for(let i=0;i<2;i++) s+=letters[Math.floor(Math.random()*letters.length)];
+  return s;
+}
+function ensurePassport(){if(!state.passport) state.passport=randPassport();}
+
+function renderSteps(){
+  const bar=document.getElementById('steps-bar');
+  bar.innerHTML=STEPS.map((s,i)=>`<div class="step-dot ${i<state.step?'done':i===state.step?'active':''}" title="${s}">${i<state.step?'✓':(i+1)}</div>`).join('');
+  document.getElementById('progress-fill').style.width=((state.step+1)/STEPS.length*100)+'%';
+}
+function flyThen(n){
+  playTone(550,0.08);
+  const p=document.createElement('div');
+  p.className='fly-plane';
+  p.innerHTML='<img src="https://github.com/nelsonsia27/G5-BookAFlight/blob/main/G5-L6-2s%20(9).gif?raw=true" alt="Flying airplane transition">';
+  document.body.appendChild(p);
+  setTimeout(()=>{p.remove();state.step=n;renderSteps();render();},2600);
+}
+function go(n){flyThen(n);}
+function render(){
+  const el=document.getElementById('step-content');
+  switch(state.step){
+    case 0: el.innerHTML=renderPassport(); break;
+    case 1: el.innerHTML=renderAirline(); break;
+    case 2: el.innerHTML=renderAirport(); break;
+    case 3: el.innerHTML=renderCountry(); break;
+    case 4: el.innerHTML=renderCheckIn(); break;
+    case 5: el.innerHTML=renderBaggage(); break;
+    case 6: el.innerHTML=renderSecurity(); break;
+    case 7: el.innerHTML=renderSchedule(); break;
+    case 8: el.innerHTML=renderSeat(); break;
+    case 9: el.innerHTML=renderMeal(); break;
+    case 10: el.innerHTML=renderSelfie(); setupCamera(); break;
+    case 11: el.innerHTML=renderTicket(); break;
+    case 12: el.innerHTML=renderArrival(); makeConfetti(); break;
+    case 13: el.innerHTML=renderCertificate(); makeConfetti(); break;
+  }
+}
+function speak(text){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.rate=.82; u.pitch=1.12; u.lang='en-US';
+  speechSynthesis.speak(u);
+}
+function speakStep(){
+  const messages=[
+    'Type your name. Read your passport number. Copy it in the box.',
+    'Choose your airline.',
+    'Choose your departure airport.',
+    'Choose your destination country.',
+    'Airport check-in. Type your passport number again.',
+    'Choose your baggage.',
+    'Security check. Click the items to pass security.',
+    'Choose your destination airport and departure time.',
+    'Choose an available seat.',
+    'Choose your in-flight meal.',
+    'Take your passport selfie and smile.',
+    'Read your boarding pass.',
+    'Welcome to your destination.',
+    'Congratulations. You are a junior traveler.'
+  ];
+  speak(messages[state.step]||'Let us travel.');
+}
+function toggleSound(){soundOn=!soundOn;document.getElementById('sound-label').textContent=soundOn?'On':'Off';}
+function playTone(freq=440,dur=.1){
+  if(!soundOn) return;
+  try{
+    const AC=window.AudioContext||window.webkitAudioContext; const ctx=new AC();
+    const o=ctx.createOscillator(); const g=ctx.createGain();
+    o.frequency.value=freq;o.type='sine';o.connect(g);g.connect(ctx.destination);
+    g.gain.setValueAtTime(.05,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+dur);
+    o.start();o.stop(ctx.currentTime+dur);
+  }catch(e){}
+}
+function showGifOverlay(src,title,nextStep){
+  playTone(660,.12);
+  const ov=document.createElement('div'); ov.className='overlay';
+  ov.innerHTML=`<div class="overlay-inner"><img src="${src}" alt="${title} animation"><h2>${title}</h2><p style="font-weight:800;color:#486178;margin:.5rem 0 1rem">Watch the full animation. Press Continue when you are ready.</p><button class="btn-primary" style="max-width:360px;margin:0 auto" onclick="this.closest('.overlay').remove();go(${nextStep})">Continue →</button></div>`;
+  document.body.appendChild(ov);
+}
+
+
+function updatePassportReady(){
+  const ok = state.name.trim().length>0 && state.passportCopy.trim().toUpperCase()===state.passport;
+  const btn = document.getElementById('passport-next-btn');
+  const msg = document.getElementById('passport-ready-msg');
+  if(btn) btn.disabled = !ok;
+  if(msg) msg.innerHTML = ok ? '<span class="status-pill">✅ Passport ready!</span>' : '<span style="font-size:.82rem;color:#b56b00;font-weight:900">Copy the number to continue.</span>';
+}
+function updateCheckInReady(){
+  const ok = state.checkPassport.trim().toUpperCase()===state.passport;
+  const btn = document.getElementById('checkin-next-btn');
+  const msg = document.getElementById('checkin-ready-msg');
+  if(btn) btn.disabled = !ok;
+  if(msg) msg.innerHTML = ok ? '<span class="status-pill">✅ Check-in complete!</span>' : '<span style="font-size:.82rem;color:#b56b00;font-weight:900">Copy the passport number shown above.</span>';
+}
+function copyPassportToCheckIn(){
+  state.checkPassport = state.passport;
+  const input = document.getElementById('check-passport-input');
+  if(input) input.value = state.passport;
+  updateCheckInReady();
+}
+
+function renderPassport(){
+  ensurePassport();
+  const ok=state.name.trim().length>0 && state.passportCopy.trim().toUpperCase()===state.passport;
+  return `<div class="card"><h2>🛂 Step 1: Make Your Passport</h2>
+  <div class="instruction">1. Type your name. 2. Read your passport number. 3. Copy the passport number exactly.</div>
+  <div class="passport-book">
+    <div class="passport-cover">
+      <div style="font-size:.9rem;letter-spacing:2px">REPUBLIC OF CLASSROOM TRAVEL</div>
+      <div class="passport-emblem">🌍</div>
+      <div style="font-size:1.55rem;font-weight:900;letter-spacing:2px">PASSPORT</div>
+      <div class="passport-page">
+        <label style="font-weight:900">Passenger Name</label>
+        <input class="input-big" value="${state.name}" oninput="state.name=this.value;updatePassportReady()" placeholder="Type your name">
+        <div style="margin-top:.75rem;font-weight:900">Passport Number</div>
+        <div class="passport-number">${state.passport}</div>
+        <div class="copy-box">
+          <input class="input-big" style="flex:1;min-width:220px" value="${state.passportCopy}" oninput="state.passportCopy=this.value.toUpperCase();this.value=state.passportCopy;updatePassportReady()" placeholder="Copy passport number here">
+          <button class="btn-secondary" onclick="state.passport=randPassport();state.passportCopy='';render()">New Number</button>
+        </div>
+        <div id="passport-ready-msg" style="margin-top:.6rem">${ok?'<span class="status-pill">✅ Passport ready!</span>':'<span style="font-size:.82rem;color:#b56b00;font-weight:900">Copy the number to continue.</span>'}</div>
+      </div>
+    </div>
+  </div>
+  <button id="passport-next-btn" class="btn-primary" onclick="go(1)" ${!ok?'disabled':''}>Start Booking →</button></div>`;
+}
+
+function renderAirline(){
+  return `<div class="card"><h2>🛫 Step 2: Choose Your Airline</h2>
+  <div class="instruction">Say: “I want to fly with ______.”</div>
+  <div class="grid-3">${AIRLINES.map(a=>`<div class="option-btn ${state.airline===a.id?'selected':''}" onclick="selectAirline('${a.id}')">
+    <div class="airline-logo" style="background:${a.bg};color:${a.color}">${a.text}</div>
+    <div class="label">${a.name}</div>
+  </div>`).join('')}</div></div>`;
+}
+function selectAirline(id){state.airline=id;const a=AIRLINES.find(x=>x.id===id);showGifOverlay(a.gif,`${a.name} selected!`,2);}
+
+function renderAirport(){
+  return `<div class="card"><h2>🏢 Step 3: Choose Departure Airport</h2>
+  <div class="instruction">Say: “I will depart from ______ Airport.”</div>
+  <div class="grid-2">${AIRPORTS.map(a=>`<div class="option-btn ${state.airportCode===a.code?'selected':''}" onclick="selectAirport('${a.code}')">
+    <div style="font-size:3rem;margin-bottom:.5rem">${a.emoji}</div>
+    <div class="label" style="font-size:1rem">${a.code}</div>
+    <div class="sub">${a.name}</div>
+  </div>`).join('')}</div></div>`;
+}
+function selectAirport(code){const a=AIRPORTS.find(x=>x.code===code);state.airportCode=a.code;state.airportCity=a.city;state.depTime=null;state.arrTime=null;showGifOverlay(a.gif,`${a.name} selected!`,3);}
+
+function renderCountry(){
+  return `<div class="card"><h2>🌎 Step 4: Choose Your Destination</h2>
+  <div class="instruction">Look at the big pictures. Say: “I want to go to ______.”</div>
+  <div class="grid-4">${Object.entries(COUNTRIES).map(([k,c])=>`<div class="option-btn ${state.country===k?'selected':''}" onclick="selectCountry('${k}')">
+    <img src="${c.img}" alt="${c.name}" onerror="this.style.display='none'">
+    <div style="font-size:1.65rem;margin:.2rem 0">${c.flag}</div>
+    <div class="label">${c.name}</div>
+  </div>`).join('')}</div>
+  <button class="btn-primary" onclick="go(4)" ${!state.country?'disabled':''}>Next: Airport Check-in →</button></div>`;
+}
+function selectCountry(k){state.country=k;state.depTime=null;state.arrTime=null;state.destAirport=COUNTRIES[k].airports[0];playTone(720,.09);render();}
+
+function renderCheckIn(){
+  const a=AIRLINES.find(x=>x.id===state.airline), c=COUNTRIES[state.country];
+  const ok=state.checkPassport.trim().toUpperCase()===state.passport;
+  return `<div class="card"><h2>🎫 Step 5: Airport Check-in</h2>
+  <div class="instruction">The staff asks: “May I see your passport?” Type your passport number again.</div>
+  <div class="check-card">
+    <div class="info-row"><span>Passenger</span><strong>${state.name}</strong></div>
+    <div class="info-row"><span>Airline</span><strong>${a.name}</strong></div>
+    <div class="info-row"><span>Destination</span><strong>${c.flag} ${c.name}</strong></div>
+    <label style="display:block;font-weight:900;margin-top:.9rem">Your Passport Number</label>
+    <div class="passport-number" style="font-size:1.25rem;margin:.45rem 0 .75rem">${state.passport}</div><button class="btn-secondary" onclick="copyPassportToCheckIn()">Copy for Me</button>
+    <label style="display:block;font-weight:900;margin-top:.5rem">Copy Passport Number Here</label>
+    <input id="check-passport-input" class="input-big" value="${state.checkPassport}" oninput="state.checkPassport=this.value.toUpperCase();this.value=state.checkPassport;updateCheckInReady()" placeholder="Example: AB-1234-CD">
+    <div id="checkin-ready-msg" style="margin-top:.7rem">${ok?'<span class="status-pill">✅ Check-in complete!</span>':'<span style="font-size:.82rem;color:#b56b00;font-weight:900">Copy the passport number shown above.</span>'}</div>
+  </div>
+  <button id="checkin-next-btn" class="btn-primary" onclick="state.checkedIn=true;go(5)" ${!ok?'disabled':''}>Next: Choose Baggage →</button></div>`;
+}
+
+function renderBaggage(){
+  return `<div class="card"><h2>🛄 Step 6: Choose Your Baggage</h2>
+  <div class="instruction">Say: “I have a ______.” Watch the suitcase move on the belt!</div>
+  <div class="bag-belt"><div class="bag-on-belt">${state.bag?BAGS.find(b=>b.id===state.bag).emoji:'🧳'}</div></div>
+  <div class="grid-4">${BAGS.map(b=>`<div class="option-btn bag-card ${state.bag===b.id?'selected':''}" onclick="state.bag='${b.id}';playTone(500,.1);render()">
+    <div class="bag-emoji">${b.emoji}</div><div class="label">${b.name}</div><div class="sub">${b.sub}</div>
+  </div>`).join('')}</div>
+  <button class="btn-primary" onclick="go(6)" ${!state.bag?'disabled':''}>Next: Security Check →</button></div>`;
+}
+
+function renderSecurity(){
+  if(!state.securityGameItems) startSecurityGame();
+  const badCount = state.securityGameItems.filter(x=>x.bad).length;
+  const selected = state.securitySelected || [];
+  return `<div class="card"><h2>👮 Step 7: Security Check Mini-game</h2>
+  <div class="instruction">Airport rule: Some items are NOT allowed. Select the <strong>${badCount}</strong> prohibited item${badCount>1?'s':''}. Then press “Check My Answers.”</div>
+  <div style="display:flex;justify-content:space-between;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem">
+    <div class="status-pill">Choose ${badCount} item${badCount>1?'s':''}</div>
+    <button class="btn-secondary" onclick="startSecurityGame();render()">🔄 New Random Items</button>
+  </div>
+  <div class="grid-3">${state.securityGameItems.map(item=>`
+    <div class="option-btn ${selected.includes(item.id)?'selected':''}" onclick="toggleSecurityItem('${item.id}')">
+      <div style="font-size:2.7rem;margin-bottom:.4rem">${item.emoji}</div>
+      <div class="label">${item.name}</div>
+      <div class="sub">${selected.includes(item.id)?'Selected':'Tap to select'}</div>
+    </div>`).join('')}</div>
+  ${state.securityAttempts>0 && !state.securityDone ? `<div class="instruction" style="margin-top:1rem;background:#fff0f0;border-color:#ffb0b0">Try again. Look for dangerous or restricted airport items.</div>`:''}
+  ${state.securityDone ? `<div class="instruction" style="margin-top:1rem;background:#e8f6ef;border-color:#1cb66f">✅ Great job! You found all prohibited items.</div>`:''}
+  <button class="btn-secondary" style="width:100%;margin-top:1rem" onclick="checkSecurityAnswers()">Check My Answers</button>
+  <button class="btn-primary" onclick="go(7)" ${!state.securityDone?'disabled':''}>Next: Choose Flight Time →</button></div>`;
+}
+
+function renderSchedule(){
+  if(!state.country) return '';
+  const c=COUNTRIES[state.country]; const fh=c.flight_h[state.airportCode]||5; const tzd=c.tz_diff;
+  const slots=[{dep:'06:00',label:'Early Morning'},{dep:'08:30',label:'Morning'},{dep:'11:00',label:'Late Morning'},{dep:'14:00',label:'Afternoon'},{dep:'18:30',label:'Evening'},{dep:'23:00',label:'Night'}].map(s=>{
+    const [h,m]=s.dep.split(':').map(Number); const tzAdjust=((tzd%24)+24)%24; const ah=(h+fh+tzAdjust)%24;
+    const arr=`${String(ah).padStart(2,'0')}:${String(m).padStart(2,'0')}`; const nextDay=(h+fh+tzAdjust)>=24; return {...s,arr,nextDay,fh};
+  });
+  return `<div class="card"><h2>🕐 Step 8: Choose Your Flight Time</h2>
+    <div class="instruction">Say: “My flight departs at ______.”</div>
+    <div style="margin-bottom:1rem">
+      <div class="info-row"><span>Flying from</span><strong>${state.airportCode} (${state.airportCity})</strong></div>
+      <div class="info-row"><span>Flying to</span><strong>${c.flag} ${c.name}</strong></div>
+      <div class="info-row"><span>Flight duration</span><strong>~${fh} hours</strong></div>
+      <div class="info-row"><span>Time difference</span><strong>${tzd>=0?'+':''}${tzd} hours</strong></div>
+    </div>
+    <div style="margin-bottom:.75rem;font-size:.82rem;font-weight:900;color:#59718a">CHOOSE DESTINATION AIRPORT</div>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem">${c.airports.map(d=>`<div class="option-btn ${state.destAirport===d?'selected':''}" onclick="selDest('${d.replace(/'/g,'')}')" style="flex:1;min-width:150px;padding:.7rem;font-size:.8rem">${d}</div>`).join('')}</div>
+    <div class="grid-2">${slots.map(s=>`<div class="time-card ${state.depTime===s.dep?'selected':''}" onclick="selTime('${s.dep}','${s.arr}',${s.nextDay})">
+      <div style="font-size:.72rem;color:#59718a;margin-bottom:4px;font-weight:900">${s.label}</div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <div><div class="time">${s.dep}</div><div class="detail">Departs</div></div><div style="color:#9aa;font-size:.9rem">→</div>
+        <div style="text-align:right"><div class="time">${s.arr}</div><div class="detail">Arrives${s.nextDay?' (+1 day)':''}</div></div>
+      </div></div>`).join('')}</div>
+    <button class="btn-primary" onclick="go(8)" ${!state.depTime?'disabled':''}>Next: Choose Seat →</button></div>`;
+}
+function selDest(d){state.destAirport=d;render();}
+function selTime(dep,arr,nd){state.depTime=dep;state.arrTime=arr+(nd?' +1':'');playTone(700,.08);render();}
+
+function renderSeat(){
+  let html=`<div class="card"><h2>💺 Step 9: Choose Your Seat</h2><div class="instruction">Tap an available seat. Yellow = Business, White = Economy.</div><div class="plane-diagram"><div style="width:60px;height:35px;background:#bad8f5;border-radius:50% 50% 0 0;margin:0 auto"></div><div class="plane-body"><div class="seat-section-label">✨ Business Class</div>`;
+  const seatHtml=(sid,cls)=>{
+    const tk=takenSeats.includes(sid);
+    const sel=state.seat===sid;
+    const classes=['seat'];
+    if(cls==='business') classes.push('business');
+    if(tk) classes.push('taken');
+    if(sel) classes.push('selected');
+    const click=tk?'':`onclick="selSeat('${sid}','${cls}')"`;
+    return `<div class="${classes.join(' ')}" ${click}>${tk?'✗':sid}</div>`;
+  };
+  for(let r=1;r<=4;r++){
+    html+=`<div class="seat-row"><span class="row-num">${r}</span>`;
+    for(let c of ['A','B','C']) html+=seatHtml(r+c,'business');
+    html+=`<div class="aisle"></div>`;
+    for(let c of ['D','E','F']) html+=seatHtml(r+c,'business');
+    html+=`</div>`;
+  }
+  html+=`<div style="border-top:2px dashed #7aa7d0;margin:.7rem 0"></div><div class="seat-section-label">Economy Class</div>`;
+  for(let r=5;r<=28;r++){
+    html+=`<div class="seat-row"><span class="row-num">${r}</span>`;
+    for(let c of ['A','B','C']) html+=seatHtml(r+c,'economy');
+    html+=`<div class="aisle"></div>`;
+    for(let c of ['D','E','F']) html+=seatHtml(r+c,'economy');
+    html+=`</div>`;
+  }
+  html+=`</div></div>${state.seat?`<div class="instruction" style="margin-top:1rem">✅ Seat <strong>${state.seat}</strong> selected — ${state.seatClass==='business'?'Business Class':'Economy Class'}</div>`:''}<button class="btn-primary" onclick="go(9)" ${!state.seat?'disabled':''}>Next: Choose Meal →</button></div>`;
+  return html;
+}
+function selSeat(id,cls){state.seat=id;state.seatClass=cls;playTone(760,.08);render();}
+
+function renderMeal(){
+  return `<div class="card"><h2>🍽️ Step 10: Choose Your In-Flight Meal</h2><div class="instruction">Say: “I would like ______, please.”</div>
+  <div class="grid-3">${MEALS.map(m=>`<div class="food-card ${state.meal===m.id?'selected':''}" onclick="selMeal('${m.id}')"><img src="${m.img}" alt="${m.name}" onerror="this.style.background='#f0f4ff'"><div class="food-info"><div class="food-name">${m.name}</div><div class="food-sub">${m.sub}</div></div></div>`).join('')}</div>
+  <button class="btn-primary" onclick="go(10)" ${!state.meal?'disabled':''}>Next: Take Selfie 📸 →</button></div>`;
+}
+function selMeal(id){state.meal=id;playTone(620,.08);render();}
+
+function renderSelfie(){
+  return `<div class="card"><h2>📸 Step 11: Take Your Passport Selfie</h2><div class="instruction">Look at the camera and smile. Your photo will appear on your boarding pass.</div>
+  <div class="selfie-area"><video id="selfie-video" autoplay playsinline style="${state.selfieData?'display:none':''}"></video><canvas id="selfie-canvas" style="display:none"></canvas>${state.selfieData?`<img src="${state.selfieData}" class="selfie-preview" alt="Your selfie">`:``}
+  <div style="margin-top:1rem;display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap"><button class="btn-secondary" onclick="takePhoto()">📷 Take Photo</button>${state.selfieData?`<button class="btn-secondary" onclick="retake()">🔄 Retake</button>`:''}</div>
+  <p style="font-size:.75rem;color:#59718a;margin-top:.75rem">Camera stays private — your photo only shows on your ticket.</p></div>
+  <button class="btn-primary" onclick="go(11)" ${!state.selfieData?'disabled':''}>Generate My Boarding Pass →</button></div>`;
+}
+function setupCamera(){setTimeout(()=>{const v=document.getElementById('selfie-video');if(!v||state.selfieData) return;navigator.mediaDevices.getUserMedia({video:{facingMode:'user'}}).then(s=>{stream=s;v.srcObject=s;}).catch(()=>{if(v) v.style.display='none';});},300);}
+function takePhoto(){const v=document.getElementById('selfie-video'), c=document.getElementById('selfie-canvas'); if(!v||!v.videoWidth){state.selfieData='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="140" height="140"><rect width="140" height="140" fill="%23e6f1fb"/><text x="70" y="80" text-anchor="middle" font-size="52">😊</text></svg>'; if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;} render();return;} c.width=v.videoWidth;c.height=v.videoHeight;c.getContext('2d').drawImage(v,0,0);state.selfieData=c.toDataURL('image/jpeg',0.82);if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}playTone(900,.1);render();}
+function retake(){state.selfieData=null;render();setupCamera();}
+
+function makeBarcodeLines(){let s='';[1,2,1,3,1,2,2,1,3,1,2,1,1,3,2,1,1,2,3,1,2,1,2,1,3,2,1,1,2,1,3,1,2,2,1].forEach((w,i)=>{s+=`<div class="barcode-line" style="width:${w*2}px;opacity:${i%2===0?1:.3}"></div>`});return s;}
+
+
+function triggerPngDownload(canvas, filename){
+  try{
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = canvas.toDataURL('image/png');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }catch(e){
+    alert('Download did not work in this browser. Please take a screenshot instead.');
+  }
+}
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.lineTo(x+w-r,y);
+  ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);
+  ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);
+  ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+}
+function drawWrappedText(ctx,text,x,y,maxWidth,lineHeight){
+  const words = String(text).split(' ');
+  let line = '';
+  for(let n=0;n<words.length;n++){
+    const testLine = line + words[n] + ' ';
+    if(ctx.measureText(testLine).width > maxWidth && n>0){
+      ctx.fillText(line,x,y);
+      line = words[n] + ' ';
+      y += lineHeight;
+    }else{
+      line = testLine;
+    }
+  }
+  ctx.fillText(line,x,y);
+  return y;
+}
+function drawBarcode(ctx,x,y){
+  const widths=[1,2,1,3,1,2,2,1,3,1,2,1,1,3,2,1,1,2,3,1,2,1,2,1,3,2,1,1,2,1,3,1,2,2,1];
+  let cx=x;
+  ctx.fillStyle='#073879';
+  widths.forEach((w,i)=>{
+    ctx.globalAlpha = i%2===0 ? 1 : .35;
+    ctx.fillRect(cx,y,w*4,58);
+    cx += w*4 + 3;
+  });
+  ctx.globalAlpha=1;
+}
+function loadImageForCanvas(src){
+  return new Promise((resolve)=>{
+    if(!src){ resolve(null); return; }
+    const img = new Image();
+    img.onload = ()=>resolve(img);
+    img.onerror = ()=>resolve(null);
+    img.src = src;
+  });
+}
+async function downloadBoardingPass(){
+  const a=AIRLINES.find(x=>x.id===state.airline)||AIRLINES[0];
+  const c=COUNTRIES[state.country]||COUNTRIES.JP;
+  const meal=MEALS.find(x=>x.id===state.meal)||MEALS[0];
+  const bag=BAGS.find(x=>x.id===state.bag)||BAGS[0];
+
+  const canvas=document.createElement('canvas');
+  canvas.width=1200; canvas.height=820;
+  const ctx=canvas.getContext('2d');
+
+  ctx.fillStyle='#f2f8ff'; ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  roundRect(ctx,90,70,1020,680,36);
+  ctx.fillStyle='#ffffff'; ctx.fill();
+  ctx.shadowColor='rgba(0,0,80,.16)'; ctx.shadowBlur=28; ctx.shadowOffsetY=8;
+  ctx.fill();
+  ctx.shadowColor='transparent';
+
+  const grad=ctx.createLinearGradient(90,70,1110,230);
+  grad.addColorStop(0,'#073879'); grad.addColorStop(1,'#1f91ff');
+  roundRect(ctx,90,70,1020,170,36);
+  ctx.fillStyle=grad; ctx.fill();
+  ctx.fillRect(90,160,1020,80);
+
+  ctx.fillStyle='#ffffff';
+  ctx.font='bold 28px Arial';
+  ctx.fillText('BOARDING PASS',130,125);
+  ctx.font='bold 44px Arial';
+  ctx.fillText(a.name,130,182);
+  ctx.font='24px Arial';
+  ctx.fillText('Flight ' + (state.flightNum||'A123'),130,220);
+  ctx.font='52px Arial';
+  ctx.fillText(c.flag,1010,145);
+  ctx.font='bold 24px Arial';
+  ctx.textAlign='right';
+  ctx.fillText(state.bookRef||'TRAVEL',1070,205);
+  ctx.textAlign='left';
+
+  ctx.fillStyle='#073879';
+  ctx.font='bold 70px Arial';
+  ctx.textAlign='center';
+  ctx.fillText(state.airportCode||'TPE',245,340);
+  ctx.fillText(c.code||'NRT',955,340);
+  ctx.font='22px Arial';
+  ctx.fillStyle='#59718a';
+  ctx.fillText((state.airportCity||'Taoyuan')+', Taiwan',245,375);
+  ctx.fillText(c.name,955,375);
+
+  ctx.strokeStyle='#bad8f5'; ctx.lineWidth=5; ctx.setLineDash([18,12]);
+  ctx.beginPath(); ctx.moveTo(350,330); ctx.lineTo(850,330); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.font='44px Arial'; ctx.fillStyle='#073879'; ctx.fillText('✈️',600,345);
+  ctx.textAlign='left';
+
+  const fields=[
+    ['Passenger',state.name||'Traveler'],['Passport',state.passport||'--'],['Baggage',bag.emoji+' '+bag.name],
+    ['Departs',state.depTime||'--'],['Arrives',state.arrTime||'--'],['Seat',state.seat||'--'],
+    ['Class',state.seatClass==='business'?'Business':'Economy'],['Meal',meal.name],['Gate','A'+(state.gateNum||'1')]
+  ];
+  let x0=130,y0=450,cellW=315,cellH=78;
+  fields.forEach((f,i)=>{
+    const x=x0+(i%3)*cellW, y=y0+Math.floor(i/3)*cellH;
+    ctx.fillStyle='#8aa0b5'; ctx.font='bold 18px Arial'; ctx.fillText(f[0].toUpperCase(),x,y);
+    ctx.fillStyle='#073879'; ctx.font='bold 26px Arial'; drawWrappedText(ctx,f[1],x,y+32,cellW-25,28);
+  });
+
+  ctx.fillStyle='#f8fbff'; ctx.fillRect(90,650,1020,100);
+
+  // Draw student selfie in the downloaded boarding pass.
+  const photoX=125, photoY=665, photoW=76, photoH=76;
+  roundRect(ctx,photoX,photoY,photoW,photoH,14);
+  ctx.fillStyle='#e6f1fb';
+  ctx.fill();
+  const selfieImg = await loadImageForCanvas(state.selfieData);
+  if(selfieImg){
+    ctx.save();
+    roundRect(ctx,photoX,photoY,photoW,photoH,14);
+    ctx.clip();
+
+    const imgRatio = selfieImg.width / selfieImg.height;
+    const boxRatio = photoW / photoH;
+    let sx=0, sy=0, sw=selfieImg.width, sh=selfieImg.height;
+    if(imgRatio > boxRatio){
+      sw = selfieImg.height * boxRatio;
+      sx = (selfieImg.width - sw) / 2;
+    }else{
+      sh = selfieImg.width / boxRatio;
+      sy = (selfieImg.height - sh) / 2;
+    }
+    ctx.drawImage(selfieImg, sx, sy, sw, sh, photoX, photoY, photoW, photoH);
+    ctx.restore();
+  }else{
+    ctx.font='42px Arial';
+    ctx.textAlign='center';
+    ctx.fillStyle='#073879';
+    ctx.fillText('😊',photoX+photoW/2,photoY+52);
+    ctx.textAlign='left';
+  }
+  ctx.lineWidth=4;
+  ctx.strokeStyle='#0b4fb3';
+  roundRect(ctx,photoX,photoY,photoW,photoH,14);
+  ctx.stroke();
+
+  ctx.fillStyle='#073879'; ctx.font='bold 28px Arial'; ctx.fillText(state.name||'Traveler',225,695);
+  ctx.fillStyle='#59718a'; ctx.font='22px Arial'; ctx.fillText((state.seatClass==='business'?'Business Class':'Economy Class')+' · '+a.name,225,728);
+
+  drawBarcode(ctx,650,670);
+  ctx.font='18px Arial'; ctx.fillStyle='#8aa0b5'; ctx.fillText((state.flightNum||'A123')+' • '+(state.airportCode||'TPE')+' → '+(c.code||'NRT'),650,745);
+
+  triggerPngDownload(canvas,'boarding-pass.png');
+}
+function downloadCertificate(){
+  const c=COUNTRIES[state.country]||COUNTRIES.JP;
+  const canvas=document.createElement('canvas');
+  canvas.width=1400; canvas.height=980;
+  const ctx=canvas.getContext('2d');
+
+  ctx.fillStyle='#fffdf3'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.strokeStyle='#ffd766'; ctx.lineWidth=34; ctx.strokeRect(45,45,1310,890);
+  ctx.strokeStyle='#b57900'; ctx.lineWidth=5; ctx.strokeRect(88,88,1224,804);
+
+  ctx.textAlign='center';
+  ctx.font='90px Arial'; ctx.fillText('🏆',700,190);
+  ctx.fillStyle='#b57900'; ctx.font='bold 48px Arial'; ctx.fillText('Junior Traveler Certificate',700,270);
+  ctx.fillStyle='#19324d'; ctx.font='30px Arial'; ctx.fillText('This certificate is proudly presented to',700,340);
+  ctx.fillStyle='#073879'; ctx.font='bold 62px Arial'; ctx.fillText(state.name||'Traveler',700,430);
+  ctx.strokeStyle='#073879'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(420,450); ctx.lineTo(980,450); ctx.stroke();
+
+  ctx.fillStyle='#19324d'; ctx.font='30px Arial';
+  ctx.fillText('for successfully booking a flight, passing airport check-in,',700,525);
+  ctx.fillText('completing security, and arriving in',700,570);
+  ctx.fillStyle='#073879'; ctx.font='bold 54px Arial'; ctx.fillText(c.flag+' '+c.name,700,650);
+
+  ctx.fillStyle='#19324d'; ctx.font='bold 28px Arial';
+  ctx.fillText('Passport No. '+(state.passport||'--')+' · Flight '+(state.flightNum||'A123'),700,735);
+  ctx.font='30px Arial'; ctx.fillText('Great job speaking English at the airport!',700,810);
+  ctx.fillStyle='#b57900'; ctx.font='bold 24px Arial'; ctx.fillText('Book a Flight! Classroom Travel Adventure',700,875);
+
+  triggerPngDownload(canvas,'junior-traveler-certificate.png');
+}
+/* kept for compatibility with older buttons */
+function downloadElementAsImage(elementId, filename){
+  if(elementId==='boarding-pass-card') downloadBoardingPass();
+  else if(elementId==='certificate-card') downloadCertificate();
+  else alert('Picture is not ready yet.');
+}
+function renderTicket(){
+  const a=AIRLINES.find(x=>x.id===state.airline), c=COUNTRIES[state.country], meal=MEALS.find(m=>m.id===state.meal), bag=BAGS.find(b=>b.id===state.bag);
+  const flightNum=a.id+(Math.floor(Math.random()*900)+100), bookRef=Math.random().toString(36).substr(2,6).toUpperCase();
+  state.flightNum=state.flightNum||flightNum; state.bookRef=state.bookRef||bookRef; state.gateNum=state.gateNum||Math.floor(Math.random()*9)+1;
+  return `<div class="card"><h2>🎫 Step 12: Boarding Pass</h2><div class="instruction">Read your boarding pass. Then board the plane!</div>
+  <div class="ticket" id="boarding-pass-card"><div class="ticket-header"><div><div style="font-size:.75rem;opacity:.8;letter-spacing:1px">BOARDING PASS</div><div style="font-size:1.2rem;font-weight:900">${a.name}</div><div>Flight ${state.flightNum}</div></div><div style="text-align:right"><div style="font-size:1.8rem">${c.flag}</div><div>${state.bookRef}</div></div></div>
+  <div class="ticket-body"><div class="route-row"><div class="route-city"><div class="code">${state.airportCode}</div><div class="name">${state.airportCity}, Taiwan</div></div><div class="route-line"><div class="plane-icon">✈️</div></div><div class="route-city"><div class="code">${c.code}</div><div class="name">${c.name}</div></div></div>
+  <div class="ticket-grid">
+    <div class="ticket-field"><div class="label">Passenger</div><div class="value">${state.name}</div></div>
+    <div class="ticket-field"><div class="label">Passport</div><div class="value">${state.passport}</div></div>
+    <div class="ticket-field"><div class="label">Baggage</div><div class="value">${bag.emoji} ${bag.name}</div></div>
+    <div class="ticket-field"><div class="label">Departs</div><div class="value">${state.depTime}</div></div>
+    <div class="ticket-field"><div class="label">Arrives</div><div class="value">${state.arrTime}</div></div>
+    <div class="ticket-field"><div class="label">Seat</div><div class="value">${state.seat}</div></div>
+    <div class="ticket-field"><div class="label">Class</div><div class="value">${state.seatClass==='business'?'Business':'Economy'}</div></div>
+    <div class="ticket-field"><div class="label">Meal</div><div class="value">${meal.name}</div></div>
+    <div class="ticket-field"><div class="label">Gate</div><div class="value">A${state.gateNum}</div></div>
+  </div></div>
+  <div class="ticket-photo-row">${state.selfieData?`<img src="${state.selfieData}" class="ticket-photo">`:'<div style="width:70px;height:70px;border-radius:14px;background:#e6f1fb;display:flex;align-items:center;justify-content:center;font-size:2rem">😊</div>'}<div><div style="font-size:1.05rem;font-weight:900;color:#073879">${state.name}</div><div>${state.seatClass==='business'?'✨ Business Class':'Economy Class'} · ${a.name}</div><div style="font-size:.75rem;color:#59718a">Destination: ${c.name} ${c.flag}</div></div></div>
+  <div class="barcode"><div class="barcode-lines">${makeBarcodeLines()}</div><div style="font-size:.7rem;color:#8aa0b5;margin-top:4px;letter-spacing:2px">${state.flightNum} • ${state.airportCode}→${c.code}</div></div></div>
+  <button class="btn-secondary" style="width:100%;margin-top:1rem" onclick="downloadBoardingPass()">⬇️ Download Boarding Pass</button><button class="btn-primary" onclick="go(12)">Board the Plane →</button></div>`;
+}
+function makeConfetti(){const wrap=document.createElement('div');wrap.className='confetti';const bits=['🎉','✨','⭐','🎈','🌟'];for(let i=0;i<45;i++){const sp=document.createElement('span');sp.textContent=bits[Math.floor(Math.random()*bits.length)];sp.style.left=Math.random()*100+'%';sp.style.animationDelay=(Math.random()*1.3)+'s';wrap.appendChild(sp);}document.body.appendChild(wrap);setTimeout(()=>wrap.remove(),3800);}
+function renderArrival(){const c=COUNTRIES[state.country];return `<div class="card" style="text-align:center"><div class="welcome">🎉 ${c.welcome}</div><div style="font-size:5rem;margin:1rem">${c.flag}</div><img src="${c.img}" alt="${c.name}" style="width:100%;max-width:560px;border-radius:24px;box-shadow:0 12px 28px rgba(20,70,130,.16)"><div class="instruction" style="margin-top:1rem">Say: “I arrived in ${c.name}!”</div><button class="btn-primary" onclick="go(13)">Get My Certificate →</button></div>`;}
+function renderCertificate(){const c=COUNTRIES[state.country];return `<div class="certificate" id="certificate-card"><div class="cert-title">Junior Traveler Certificate</div><p>This certificate is proudly presented to</p><div class="cert-name">${state.name}</div><p>for successfully booking a flight, passing airport check-in, completing security, and arriving in</p><h2 style="font-size:2rem;margin:.7rem;color:#073879">${c.flag} ${c.name}</h2><p style="font-weight:900;margin-top:1rem">Passport No. ${state.passport} · Flight ${state.flightNum}</p><p style="margin-top:1rem">Great job speaking English at the airport!</p><button class="btn-secondary" style="width:100%;margin-top:1rem" onclick="downloadCertificate()">⬇️ Download Certificate</button><button class="btn-primary" onclick="restart()" style="background:linear-gradient(135deg,#0a7c42,#16a36a)">Book Another Flight!</button></div>`;}
+function restart(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}state={step:0,name:'',passport:'',passportCopy:'',airline:null,airportCode:null,airportCity:null,country:null,destAirport:null,checkPassport:'',checkedIn:false,bag:null,securityDone:false,securityItems:{passport:false,bag:false,water:false},securityGameItems:null,securitySelected:[],securityAttempts:0,depTime:null,arrTime:null,seat:null,seatClass:null,meal:null,selfieData:null};initTaken();renderSteps();render();}
+
+renderSteps();render();
+</script>
